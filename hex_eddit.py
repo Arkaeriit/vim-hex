@@ -13,6 +13,7 @@ hints.
 """
 
 import math
+import re
 
 # ------------------------------ Dumping to hex ------------------------------ #
 
@@ -44,7 +45,7 @@ def show_byte_array(content):
         elif byte <= 0x6:
             ret += "○"
         elif byte == 0x7:
-            ret += "🕭" # Not great
+            ret += "⍾" # Not great
         elif byte == 0x8:
             ret += "⇤"
         elif byte == 0x9:
@@ -71,10 +72,51 @@ def pad_left(s, size):
 
 def hd_buffer(content):
     "Cut the buffer in 16 bytes chunks and hd them all."
-    offset_size = math.ceil(math.log2(len(content)))
+    offset_size = math.ceil(math.log(len(content), 16))
+    if not isinstance(content, bytearray):
+        raise TypeError("Input to hd_buffer should be a bytearray")
     ret = ""
     for i in range(math.ceil(len(content)/16)):
         ret += f"{full_hd(i * 16, offset_size, content[i*16:(i+1)*16])}\n"
+    return ret
+
+# ------------------------------- Hex to binary ------------------------------ #
+
+def remove_hints_and_ws(line):
+    """Remove position and content hints from a line of hexdump. After that, the
+    whitespace is also removed."""
+    no_pos_hint = re.sub(r"^[^|]*\|", "", line)
+    no_hint = re.sub(r"\|.*$", "", no_pos_hint)
+    return re.sub(r"\s", "", no_hint)
+
+def check_good_raw_dh(line):
+    """Ensure that a line of raw hexdump does not contains anything else than
+    hex digits and have a pairs of them. Should be applied to the output of
+    `remove_hints_and_ws`."""
+    if re.sub(r"[a-fA-F0-9]", "", line) != "":
+        raise ValueError("Input of check_good_raw_dh contains bad chars.")
+    if len(line) % 2 != 0:
+        raise ValueError("Input of check_good_raw_dh contains an odd number of digits")
+
+def binarize_hd(line):
+    """From a line of raw hexdump, returns a bytearray of the binary value."""
+    ret = bytearray(b"")
+    for i in range(int(len(line)/2)):
+        byte = line[i*2:(i+1)*2]
+        ret.append(int(byte, 16))
+    return ret
+
+def binarize_buffer(content):
+    "Binarize a whole text of hexdump text."
+    if isinstance(content, bytearray):
+        content = decode(content, "UTF-8")
+    if not isinstance(content, str):
+        raise TypeError("Input of binarize_buffer should be a string or a bytearray")
+    ret = bytearray(b"")
+    for line in content.split("\n"):
+        raw = remove_hints_and_ws(line)
+        check_good_raw_dh(raw)
+        ret += binarize_hd(raw)
     return ret
 
 # ---------------------------------- Testing --------------------------------- #
@@ -83,5 +125,12 @@ if __name__ == "__main__":
     arr = []
     for i in range(300):
         arr.append(i % 256)
-    print(hd_buffer(bytearray(arr)))
+    buff = hd_buffer(bytearray(arr))
+    print(buff)
+    if bytearray(arr) != binarize_buffer(buff):
+        print(bytearray(arr))
+        print("---")
+        print(binarize_buffer(buff))
+        print("---")
+        print("Ho no, convert back does not works...")
 
