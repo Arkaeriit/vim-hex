@@ -72,11 +72,11 @@ def pad_left(s, size):
 
 def hd_buffer(content):
     "Cut the buffer in 16 bytes chunks and hd them all."
-    offset_size = math.ceil(math.log(len(content), 16))
+    offset_size = math.ceil(math.log(len(content)+1, 16))
     if not isinstance(content, bytearray):
         raise TypeError("Input to hd_buffer should be a bytearray")
     ret = ""
-    for i in range(math.ceil(len(content)/16)):
+    for i in range(math.ceil(len(content)/16)+1):
         ret += f"{full_hd(i * 16, offset_size, content[i*16:(i+1)*16])}\n"
     return ret
 
@@ -109,7 +109,7 @@ def binarize_hd(line):
 def binarize_buffer(content):
     "Binarize a whole text of hexdump text."
     if isinstance(content, bytearray):
-        content = decode(content, "UTF-8")
+        content = content.decode("UTF-8")
     if not isinstance(content, str):
         raise TypeError("Input of binarize_buffer should be a string or a bytearray")
     ret = bytearray(b"")
