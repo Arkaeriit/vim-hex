@@ -12,6 +12,10 @@ When writing back, only the content if used. The offset and txt views are only
 hints.
 """
 
+import math
+
+# ------------------------------ Dumping to hex ------------------------------ #
+
 def full_hd(offset, offset_size, content):
     """Return a string of hexdumped value. The offset is used for the hint and
     should be an integer. The content should be a bytearray of at most 16 bytes.
@@ -65,9 +69,19 @@ def pad_left(s, size):
         s += " "
     return s
 
+def hd_buffer(content):
+    "Cut the buffer in 16 bytes chunks and hd them all."
+    offset_size = math.ceil(math.log2(len(content)))
+    ret = ""
+    for i in range(math.ceil(len(content)/16)):
+        ret += f"{full_hd(i * 16, offset_size, content[i*16:(i+1)*16])}\n"
+    return ret
+
 # ---------------------------------- Testing --------------------------------- #
 
 if __name__ == "__main__":
-    print(full_hd(0x230, 5, bytearray([0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15])))
-    print(full_hd(0x240, 5, b"La fleur bleue"))
+    arr = []
+    for i in range(300):
+        arr.append(i % 256)
+    print(hd_buffer(bytearray(arr)))
 
