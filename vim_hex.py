@@ -4,7 +4,7 @@ from hex_eddit import hd_buffer, binarize_buffer
 import vim
 
 def hd_vim_buffer():
-    bin_buff = bytearray(vim.vars["vim_hex_global"])
+    bin_buff = bytearray(vim.vars["vim_hex_global"])[0:-1]
     set_buf(hd_buffer(bin_buff))
 
 def binarize_vim_buffer():

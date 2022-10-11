@@ -7,5 +7,6 @@ if __name__ == "__main__":
     pos = vim.current.window.cursor
     binarize_vim_buffer()
     vim.command("w")
+    vim.command("call BufferToGlobal()")
     hd_vim_buffer()
 
