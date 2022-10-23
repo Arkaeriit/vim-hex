@@ -1,3 +1,4 @@
+" Global used to import Lua libs
 let g:vim_hex_dir = expand('<sfile>:p:h')
 
 function vim_hex#OpenHex()

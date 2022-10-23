@@ -26,8 +26,8 @@ You might want some files to be opened as hex dump without having to give the `-
 " Consider *.bin and *.exe files as binaries
 augroup Binary
   au!
-  au BufReadPre *.bin let &bin=1
-  au BufReadPre *.exe let &bin=1
+  au BufReadPre,FileReadPre,BufNewFile *.bin let &bin=1
+  au BufReadPre,FileReadPre,BufNewFile *.exe let &bin=1
 augroup END
 ```
 
