@@ -13,6 +13,7 @@ local function set_buf(s)
         current_buffer:insert("")
         current_buffer[i] = lines[i]
     end
+    current_buffer[#lines+1] = nil
 end
 
 -- Get the current buffer as a string
@@ -28,9 +29,16 @@ end
 
 -- Transform the current buffer into an hexdump of itself
 module.hd_vim_buffer = function()
-    bin_buff = get_buf()
-    dumped_buff = hex_eddit.hd_buffer(bin_buff)
+    local bin_buff = get_buf()
+    local dumped_buff = hex_eddit.hd_buffer(bin_buff)
     set_buf(dumped_buff)
+end
+
+-- Transfor the current hexdump buffer ack into binary
+module.binarize_vim_buffer = function()
+    local dumped_buff = get_buf()
+    local bin_buff = hex_eddit.binarize_buffer(dumped_buff)
+    set_buf(bin_buff)
 end
 
 return module

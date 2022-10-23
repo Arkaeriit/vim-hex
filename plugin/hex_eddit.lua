@@ -117,6 +117,9 @@ module.split_line = function(txt)
             last_i = i+1
         end
     end
+    if last_i <= #txt then
+        ret[#ret+1] = txt:sub(last_i, #txt)
+    end
     return ret
 end
 
