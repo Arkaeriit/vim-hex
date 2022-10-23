@@ -64,7 +64,7 @@ end
 
 -- Cut the buffer in 16 bytes chunks and hd them all.
 module.hd_buffer = function(content)
-    local offset_size = math.ceil(math.log(#content+1, 16))
+    local offset_size = math.ceil(math.log(#content+16, 16))
     local ret = ""
     for i=0,math.ceil(#content/16) do
         ret = ret .. full_hd(i * 16, offset_size, content:sub(i*16+1, (i+1)*16)) .. "\n"
