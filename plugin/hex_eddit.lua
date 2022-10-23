@@ -108,7 +108,7 @@ local function binarize_hd(line)
 end
 
 -- From a string of text, splits it inti a table of each line of the text.
-local function split_line(txt)
+module.split_line = function(txt)
     local ret = {}
     local last_i = 1
     for i=1,#txt do
@@ -123,7 +123,7 @@ end
 -- Binarize a whole text of hexdump text.
 module.binarize_buffer = function(content)
     local ret = ""
-    local lines = split_line(content)
+    local lines = module.split_line(content)
     for i=1,#lines do
         local raw = remove_hints_and_ws(lines[i])
         check_good_raw_dh(raw)
