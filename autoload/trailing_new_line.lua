@@ -12,8 +12,11 @@ end
 -- Set b:vim_hex_trailing to 1 if the last char in b:vim_hex_filename is a new
 -- line and false otherwise.
 local f = io.open(vim.eval("b:vim_hex_filename"), "r")
-local content = read_all(f)
-f:close()
+local content = " "
+if f then
+    content = read_all(f)
+    f:close()
+end
 local last_char = content:sub(#content)
 if last_char == "\n" then
     vim.command("let b:vim_hex_trailing = 1")
