@@ -1,6 +1,5 @@
-local module = {}
-
 local hex_eddit = require("hex_eddit")
+local module = {hex_eddit = hex_eddit}
 
 -- Sets the current buffer to the string s
 module.set_buff = function(s)

@@ -3,7 +3,7 @@ local module = {}
 -------------------------------- Dumping to hex --------------------------------
 
 -- Serialize a binary string in a succession of bytes separated by spaces
-local function reduced_hd(content)
+module.reduced_hd = function(content)
     local ret = ""
     for i=1,#content do
         ret = ret .. string.format("%02x ", content:byte(i,i))
@@ -59,7 +59,7 @@ local function full_hd(offset, offset_size, content)
         error("Content of full_hd too long")
     end
     local offset_fmt = string.format("%%0%dx", offset_size)
-    return string.format(offset_fmt .. " | %s | %s", offset, pad_left(reduced_hd(content), 16 * 3 - 1), show_byte_array(content))
+    return string.format(offset_fmt .. " | %s | %s", offset, pad_left(module.reduced_hd(content), 16 * 3 - 1), show_byte_array(content))
 end
 
 -- Cut the buffer in 16 bytes chunks and hd them all.
@@ -97,7 +97,7 @@ local function check_good_raw_dh(line)
 end
 
 -- From a line of raw hexdump, returns a string of the binary value.
-local function binarize_hd(line)
+module.binarize_hd = function(line)
     local ret = ""
     for i=1,#line/2 do
         byte = line:sub((i-1)*2+1, i*2)
@@ -139,7 +139,7 @@ module.binarize_buffer = function(content)
             print(err)
             return ret, false
         end
-        ret = ret .. binarize_hd(raw)
+        ret = ret .. module.binarize_hd(raw)
     end
     return ret, true
 end
