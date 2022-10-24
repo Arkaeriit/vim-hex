@@ -35,5 +35,6 @@ That way, `.bin` and `.exe` files are always opened with Vim Hex; even without t
 
 ## Road-map
 
+* Fix bug with trailing new lines again. :(
 * Color.
 
