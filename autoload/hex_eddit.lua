@@ -2,7 +2,7 @@ local module = {}
 
 -------------------------------- Dumping to hex --------------------------------
 
--- Serialize a binary string in a succesion of bytes separated by spaces
+-- Serialize a binary string in a succession of bytes separated by spaces
 local function reduced_hd(content)
     local ret = ""
     for i=1,#content do
@@ -75,7 +75,7 @@ end
 --------------------------------- Hex to binary --------------------------------
 
 -- Remove position and content hints from a line of hexdump. After that, the
--- whitespace is also removed.
+-- white-space is also removed.
 local function remove_hints_and_ws(line)
     local no_pos_hint = line:gsub("^[^|]*|", "")
     local no_hint = no_pos_hint:gsub("|.*$", "")
@@ -84,17 +84,16 @@ end
 
 -- Ensure that a line of raw hexdump does not contains anything else than
 -- hex digits and have a pairs of them. Should be applied to the output of
--- `remove_hints_and_ws`.
+-- `remove_hints_and_ws`. Returns a string with an error message if any or nil.
 local function check_good_raw_dh(line)
     local no_digits = line:gsub("[a-fA-F0-9]", "")
     if #no_digits ~= 0 then
-        print(line)
-        error("Input of check_good_raw_dh contains bad chars.")
+        return "The line contains bad chars (non hex digits)."
     end
     if #line % 2 ~= 0 then
-        print(line)
-        error("Input of check_good_raw_dh contains an odd number of digits")
+        return "The line contains an odd number of digits"
     end
+    return nil
 end
 
 -- From a line of raw hexdump, returns a string of the binary value.
@@ -107,7 +106,7 @@ local function binarize_hd(line)
     return ret
 end
 
--- From a string of text, splits it inti a table of each line of the text.
+-- From a string of text, splits it into a table of each line of the text.
 module.split_line = function(txt)
     local ret = {}
     local last_i = 1
@@ -123,16 +122,22 @@ module.split_line = function(txt)
     return ret
 end
 
--- Binarize a whole text of hexdump text.
+-- Binarize a whole text of hexdump text. Return true if the input is correct
+-- and false otherwise.
 module.binarize_buffer = function(content)
     local ret = ""
     local lines = module.split_line(content)
     for i=1,#lines do
         local raw = remove_hints_and_ws(lines[i])
-        check_good_raw_dh(raw)
+        local err = check_good_raw_dh(raw)
+        if err then
+            print("Error line " .. tostring(i) .. ".")
+            print(err)
+            return ret, false
+        end
         ret = ret .. binarize_hd(raw)
     end
-    return ret
+    return ret, true
 end
 
 return module

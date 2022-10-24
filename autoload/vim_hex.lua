@@ -34,11 +34,15 @@ module.hd_vim_buffer = function()
     set_buf(dumped_buff)
 end
 
--- Transfor the current hexdump buffer ack into binary
+-- Transform the current hexdump buffer ack into binary
+-- Return true if it can be done and false otherwise.
 module.binarize_vim_buffer = function()
     local dumped_buff = get_buf()
-    local bin_buff = hex_eddit.binarize_buffer(dumped_buff)
-    set_buf(bin_buff)
+    local bin_buff, ok = hex_eddit.binarize_buffer(dumped_buff)
+    if ok then
+        set_buf(bin_buff)
+    end
+    return ok
 end
 
 return module
