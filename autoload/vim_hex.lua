@@ -1,5 +1,5 @@
-local hex_eddit = require("hex_eddit")
-local module = {hex_eddit = hex_eddit}
+local hex_edit = require("hex_edit")
+local module = {hex_edit = hex_edit}
 
 -- Sets the current buffer to the string s
 module.set_buff = function(s)
@@ -7,7 +7,7 @@ module.set_buff = function(s)
     for i=0,#current_buffer do
         current_buffer[1] = nil
     end
-    local lines = hex_eddit.split_line(s)
+    local lines = hex_edit.split_line(s)
     for i=1,#lines do
         current_buffer:insert("")
         current_buffer[i] = lines[i]
@@ -34,7 +34,7 @@ end
 -- Transform the current buffer into an hexdump of itself
 module.hd_vim_buffer = function()
     local bin_buff = module.get_buff()
-    local dumped_buff = hex_eddit.hd_buffer(bin_buff)
+    local dumped_buff = hex_edit.hd_buffer(bin_buff)
     module.set_buff(dumped_buff)
 end
 
@@ -42,7 +42,7 @@ end
 -- Return true if it can be done and false otherwise.
 module.binarize_vim_buffer = function()
     local dumped_buff = module.get_buff()
-    local bin_buff, ok = hex_eddit.binarize_buffer(dumped_buff)
+    local bin_buff, ok = hex_edit.binarize_buffer(dumped_buff)
     if ok then
         module.set_buff(bin_buff)
     end
