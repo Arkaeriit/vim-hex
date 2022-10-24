@@ -3,7 +3,7 @@ local module = {}
 local hex_eddit = require("hex_eddit")
 
 -- Sets the current buffer to the string s
-local function set_buf(s)
+module.set_buff = function(s)
     local current_buffer = vim.buffer(false)
     for i=0,#current_buffer do
         current_buffer[1] = nil
@@ -17,7 +17,7 @@ local function set_buf(s)
 end
 
 -- Get the current buffer as a string
-local function get_buf()
+module.get_buff = function()
     local current_buffer = vim.buffer(false)
     local ret = ""
     for i=1,#current_buffer do
@@ -29,18 +29,18 @@ end
 
 -- Transform the current buffer into an hexdump of itself
 module.hd_vim_buffer = function()
-    local bin_buff = get_buf()
+    local bin_buff = module.get_buff()
     local dumped_buff = hex_eddit.hd_buffer(bin_buff)
-    set_buf(dumped_buff)
+    module.set_buff(dumped_buff)
 end
 
 -- Transform the current hexdump buffer ack into binary
 -- Return true if it can be done and false otherwise.
 module.binarize_vim_buffer = function()
-    local dumped_buff = get_buf()
+    local dumped_buff = module.get_buff()
     local bin_buff, ok = hex_eddit.binarize_buffer(dumped_buff)
     if ok then
-        set_buf(bin_buff)
+        module.set_buff(bin_buff)
     end
     return ok
 end
