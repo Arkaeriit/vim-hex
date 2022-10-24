@@ -10,6 +10,10 @@ function vim_hex#BufferToVar()
 endfunction
 
 function vim_hex#OpenHex()
+    set nofixendofline
+    set noeol
+    let b:vim_hex_filename = expand('%')
+    call vim_hex#UpdateTrailing()
     call vim_hex#BufferToVar()
     let l:lua_script = g:vim_hex_dir . "/vim_open_hex.lua"
     let l:lua_exec_cmd = 'luafile ' . l:lua_script
@@ -22,3 +26,8 @@ function vim_hex#SaveHex()
     execute l:lua_exec_cmd
 endfunction
 
+function vim_hex#UpdateTrailing()
+    let l:lua_script = g:vim_hex_dir . "/trailing_new_line.lua"
+    let l:lua_exec_cmd = 'luafile ' . l:lua_script
+    execute l:lua_exec_cmd
+endfunction

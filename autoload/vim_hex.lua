@@ -23,7 +23,12 @@ module.get_buff = function()
     for i=1,#current_buffer do
         ret = ret .. current_buffer[i] .. "\n"
     end
-    return ret:sub(1,#ret-1)
+    if (vim.eval("b:vim_hex_trailing")) == 1 then
+        vim.command("let b:vim_hex_trailing = 0")
+        return ret
+    else
+        return ret:sub(1,#ret-1)
+    end
 end
 
 

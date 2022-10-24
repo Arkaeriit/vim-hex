@@ -118,6 +118,10 @@ module.split_line = function(txt)
     end
     if last_i <= #txt then
         ret[#ret+1] = txt:sub(last_i, #txt)
+    elseif last_i == #txt + 1 then
+        ret[#ret+1] = ""
+    else
+        error("Unexpected behavior in split_line")
     end
     return ret
 end
