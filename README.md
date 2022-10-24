@@ -35,7 +35,5 @@ That way, `.bin` and `.exe` files are always opened with Vim Hex; even without t
 
 ## Road-map
 
-* Better handling of errors.
-* Better handling of trailing new-line in source files.
 * Color.
 
