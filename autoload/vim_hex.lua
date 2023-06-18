@@ -38,9 +38,11 @@ module.hd_vim_buffer = function()
     local processes_packets = {}
     local streamer = new_streamer(tonumber(vim.eval("getfsize(expand(@%))")))
     
-    for i=0,#current_buffer do
+    for i=1,#current_buffer do
         processes_packets[#processes_packets+1] = streamer:process(current_buffer[1])
-        processes_packets[#processes_packets+1] = streamer:process("\n")
+        if #current_buffer > 1 or (vim.eval("b:vim_hex_trailing")) == 1 then
+            processes_packets[#processes_packets+1] = streamer:process("\n")
+        end
         current_buffer[1] = nil
     end
 
