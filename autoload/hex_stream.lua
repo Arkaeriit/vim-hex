@@ -6,26 +6,6 @@
 [----------------------------------------------]]
 
 
--- Module to process some text into a list of lines
--- A default version in Lua is implemented but we try to replace it with a
--- faster version written in C if it is available.
-local helper = {process = function(offset, offset_size, unprocessed_data)
-    local ret = {}
-    local number_of_lines = math.floor(#unprocessed_data/16)
-    for i=1,number_of_lines do
-      ret[#ret+1] = full_hd(offset, offset_size, unprocessed_data:sub(1+((i-1)*16), (i)*16))
-      line_count = line_count + 1
-    end
-    local left_unprocessed = unprocessed_data:sub(1+number_of_lines*16)
-    return ret, left_unprocessed
-end}
-local so_lib_path = package.cpath:sub(0,#package.cpath-4).."hex_stream_helper.so"
-local so = io.open(so_lib_path, "r")
-if so ~= nil then
-    so:close()
-    helper = require("hex_stream_helper")
-end
-
 -- Serialize a binary string in a succession of bytes separated by spaces
 local function reduced_hd (content)
     local ret = ""
@@ -84,6 +64,25 @@ local function full_hd(offset, offset_size, content)
     end
     local offset_fmt = string.format("%%0%dx", offset_size)
     return string.format(offset_fmt .. " | %s | %s", offset, pad_left(reduced_hd(content), 16 * 3 - 1), show_byte_array(content))
+end
+
+-- Module to process some text into a list of lines
+-- A default version in Lua is implemented but we try to replace it with a
+-- faster version written in C if it is available.
+local helper = {process = function(offset, offset_size, unprocessed_data)
+    local ret = {}
+    local number_of_lines = math.floor(#unprocessed_data/16)
+    for i=1,number_of_lines do
+      ret[#ret+1] = full_hd(offset, offset_size, unprocessed_data:sub(1+((i-1)*16), (i)*16))
+    end
+    local left_unprocessed = unprocessed_data:sub(1+number_of_lines*16)
+    return ret, left_unprocessed
+end}
+local so_lib_path = package.cpath:sub(0,#package.cpath-4).."hex_stream_helper.so"
+local so = io.open(so_lib_path, "r")
+if so ~= nil then
+    so:close()
+    helper = require("hex_stream_helper")
 end
 
 -- streamer object
