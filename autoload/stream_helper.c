@@ -129,7 +129,7 @@ static void remove_hints_and_ws(char* dest, const char* src) {
 const char* check_good_raw_df(const char* line) {
     for (size_t i=0; i<strlen(line); i++) {
         char c = line[i];
-        if ('0' <= c && c <= '9' && 'a' <= c && c <= 'f' && 'A' <= c && c <= 'F') {
+        if (!(('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F'))) {
             return "The line contains bad chars (non hex digits).";
         }
     }
