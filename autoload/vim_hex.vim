@@ -34,6 +34,7 @@ function vim_hex#Auto()
       au!
       au BufWritePost,FileWritePost * if &bin | call vim_hex#SaveHex() | endif
       au CmdlineLeave * if &bin | if b:vim_hex_error == 1 | set mod | endif | endif
+      au VimEnter * syntax off
     augroup END
 endfunction
 
