@@ -5,6 +5,8 @@
 |lines, it is more efficient that way.          |
 [----------------------------------------------]]
 
+local helper = require("hex_stream_helper")
+
 -- Serialize a binary string in a succession of bytes separated by spaces
 local function reduced_hd (content)
     local ret = ""
@@ -84,14 +86,19 @@ local new_stream_hexdumper = function(est_size)
     end
 
     stream_hd.__process = function(stream)
-        local ret = {}
-        local number_of_lines = math.floor(#stream.unprocessed_data/16)
-        for i=1,number_of_lines do
-            ret[#ret+1] = full_hd(stream.line_count * 16, stream.offset_size, stream.unprocessed_data:sub(1+((i-1)*16), (i)*16))
-            stream.line_count = stream.line_count + 1
-        end
-        stream.unprocessed_data = stream.unprocessed_data:sub(1+number_of_lines*16)
-        return ret
+        local line_table, left_unprocessed = helper.process(stream.line_count * 16, stream.offset_size, stream.unprocessed_data)
+        stream.line_count = stream.line_count + #line_table
+        stream.unprocessed_data = left_unprocessed
+        return line_table
+
+        --local ret = {}
+        --local number_of_lines = math.floor(#stream.unprocessed_data/16)
+        --for i=1,number_of_lines do
+            --ret[#ret+1] = full_hd(stream.line_count * 16, stream.offset_size, stream.unprocessed_data:sub(1+((i-1)*16), (i)*16))
+            --stream.line_count = stream.line_count + 1
+        --end
+        --stream.unprocessed_data = stream.unprocessed_data:sub(1+number_of_lines*16)
+        --return ret
     end
 
     stream_hd.__check_finished = function(stream)
