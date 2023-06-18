@@ -74,6 +74,7 @@ local helper = {process = function(offset, offset_size, unprocessed_data)
     local number_of_lines = math.floor(#unprocessed_data/16)
     for i=1,number_of_lines do
       ret[#ret+1] = full_hd(offset, offset_size, unprocessed_data:sub(1+((i-1)*16), (i)*16))
+      offset = offset + 16
     end
     local left_unprocessed = unprocessed_data:sub(1+number_of_lines*16)
     return ret, left_unprocessed
@@ -97,7 +98,7 @@ local new_stream_hexdumper = function(est_size)
     stream_hd.unprocessed_data = ""
     stream_hd.line_count = 0
     stream_hd.finished = false
-    stream_hd.offset_size = math.max(1, math.ceil(math.log(est_size)/math.log(16)))
+    stream_hd.offset_size = math.max(math.ceil(math.log(est_size+1)/math.log(16)), 1)
 
     stream_hd.__add_data = function(stream, data)
         stream.unprocessed_data = stream.unprocessed_data .. data
