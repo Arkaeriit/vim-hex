@@ -5,7 +5,26 @@
 |lines, it is more efficient that way.          |
 [----------------------------------------------]]
 
-local helper = require("hex_stream_helper")
+
+-- Module to process some text into a list of lines
+-- A default version in Lua is implemented but we try to replace it with a
+-- faster version written in C if it is available.
+local helper = {process = function(offset, offset_size, unprocessed_data)
+    local ret = {}
+    local number_of_lines = math.floor(#unprocessed_data/16)
+    for i=1,number_of_lines do
+      ret[#ret+1] = full_hd(offset, offset_size, unprocessed_data:sub(1+((i-1)*16), (i)*16))
+      line_count = line_count + 1
+    end
+    local left_unprocessed = unprocessed_data:sub(1+number_of_lines*16)
+    return ret, left_unprocessed
+end}
+local so_lib_path = package.cpath:sub(0,#package.cpath-4).."hex_stream_helper.so"
+local so = io.open(so_lib_path, "r")
+if so ~= nil then
+    so:close()
+    helper = require("hex_stream_helper")
+end
 
 -- Serialize a binary string in a succession of bytes separated by spaces
 local function reduced_hd (content)
@@ -72,14 +91,14 @@ end
 --
 -- streamer:process(data) -> Add new data to process and return the last
 --                           processed data as a list of lines.
--- strealer:finishes()    -> Process any leftover data and render the streamer
+-- streamer:finishes()    -> Process any leftover data and render the streamer
 --                           unusable. The data is returned as a list of lines.
 local new_stream_hexdumper = function(est_size)
     local stream_hd = {}
     stream_hd.unprocessed_data = ""
     stream_hd.line_count = 0
     stream_hd.finished = false
-    stream_hd.offset_size = math.ceil(math.log(est_size)/math.log(16))
+    stream_hd.offset_size = math.max(1, math.ceil(math.log(est_size)/math.log(16)))
 
     stream_hd.__add_data = function(stream, data)
         stream.unprocessed_data = stream.unprocessed_data .. data
@@ -90,15 +109,6 @@ local new_stream_hexdumper = function(est_size)
         stream.line_count = stream.line_count + #line_table
         stream.unprocessed_data = left_unprocessed
         return line_table
-
-        --local ret = {}
-        --local number_of_lines = math.floor(#stream.unprocessed_data/16)
-        --for i=1,number_of_lines do
-            --ret[#ret+1] = full_hd(stream.line_count * 16, stream.offset_size, stream.unprocessed_data:sub(1+((i-1)*16), (i)*16))
-            --stream.line_count = stream.line_count + 1
-        --end
-        --stream.unprocessed_data = stream.unprocessed_data:sub(1+number_of_lines*16)
-        --return ret
     end
 
     stream_hd.__check_finished = function(stream)
