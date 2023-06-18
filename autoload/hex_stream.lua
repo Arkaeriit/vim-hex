@@ -69,7 +69,7 @@ end
 -- Module to process some text into a list of lines
 -- A default version in Lua is implemented but we try to replace it with a
 -- faster version written in C if it is available.
-local helper = {process = function(offset, offset_size, unprocessed_data)
+local helper = {process_bin_to_hex = function(offset, offset_size, unprocessed_data)
     local ret = {}
     local number_of_lines = math.floor(#unprocessed_data/16)
     for i=1,number_of_lines do
@@ -83,7 +83,7 @@ local so_lib_path = package.cpath:sub(0,#package.cpath-4).."hex_stream_helper.so
 local so = io.open(so_lib_path, "r")
 if so ~= nil then
     so:close()
-    helper = require("hex_stream_helper")
+    helper = require("stream_helper")
 end
 
 -- streamer object
@@ -105,7 +105,7 @@ local new_stream_hexdumper = function(est_size)
     end
 
     stream_hd.__process = function(stream)
-        local line_table, left_unprocessed = helper.process(stream.line_count * 16, stream.offset_size, stream.unprocessed_data)
+        local line_table, left_unprocessed = helper.process_bin_to_hex(stream.line_count * 16, stream.offset_size, stream.unprocessed_data)
         stream.line_count = stream.line_count + #line_table
         stream.unprocessed_data = left_unprocessed
         return line_table

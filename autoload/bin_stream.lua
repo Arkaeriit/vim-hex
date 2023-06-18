@@ -58,6 +58,27 @@ local function split_line(txt)
     return ret
 end
 
+-- Module to process a hex line into a list of finished lines.
+-- The process_hex_to_bin function returns a list of converted lines and an
+-- optional error message.
+local helper = {process_hex_to_bin = function(hd_line, old_line)
+    local clean = remove_hints_and_ws(hd_line)
+    local err = check_good_raw_dh(clean)
+    if err then
+        return {}, err
+    end
+    local raw = binarize_hd(clean)
+    local lines = split_line(old_line..raw)
+    return lines, nil
+
+end}
+local so_lib_path = package.cpath:sub(0,#package.cpath-4).."stream_helper.so"
+local so = io.open(so_lib_path, "r")
+if so ~= nil then
+    so:close()
+    helper = require("stream_helper")
+end
+
 local new_stream_binarize = function()
     local stream_bin = {}
     stream_bin.lines = {}
@@ -83,13 +104,10 @@ local new_stream_binarize = function()
 
     stream_bin.stream_line = function(stream, line)
         stream:check_finished()
-        local clean = remove_hints_and_ws(line)
-        local err = check_good_raw_dh(clean)
+        local lines, err = helper.process_hex_to_bin(line, stream.old_line_end)
         if err then
             return err
         end
-        local raw = binarize_hd(clean)
-        local lines = split_line(stream.old_line_end..raw)
         for i=1,(#lines-1) do
             stream.lines[#stream.lines+1] = lines[i]
         end

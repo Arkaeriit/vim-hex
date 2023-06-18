@@ -5,7 +5,7 @@ CFLAGS += -Wall -Wextra -fPIC -g
 
 CC ?= gcc
 
-all : hex_stream_helper.so
+all : stream_helper.so
 
 %o : %c
 	$(CC) -c $< $(CFLAGS) -o $@

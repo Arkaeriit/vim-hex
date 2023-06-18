@@ -41,7 +41,6 @@ module.binarize_vim_buffer = function()
     local ok = true
     vim.command('call vim_hex#safekeeping("binarize")')
 
-
     for i=1,#current_buffer do
         local err = streamer:stream_line(current_buffer[1])
         if err then

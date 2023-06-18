@@ -18,6 +18,12 @@ To use this plugin, you must have Vim compiled with Lua support.
 
 Simply install this plugin like any other plugin. For example, with Pathogen, copy this repository in you `bundle/` directory.
 
+## Speed boost
+
+The plugin can work while only executing Lua and Vimscript. It works but it can be somewhat slow on big files. To minimize this issue, some of the most expensive functions have been written in C as well. To use them, simply use `make` to compile them. For it to work, you need to have a Lua environment compatible with the Lua interpreter embedded in Vim.
+
+By doing so, you can expect a 5.5 times speed upgrade for reading files and a 2.1 times speed upgrade for writing files.
+
 ## Automatically open binary files
 
 You might want some files to be opened as hex dump without having to give the `-b` flag to Vim. For example, `.bin` or `.exe` files. You can do that by adding the following lines in your vimrc:
