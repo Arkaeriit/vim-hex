@@ -1,6 +1,7 @@
 local hex_edit = require("hex_edit")
 local module = {hex_edit = hex_edit}
-local new_streamer = require("hex_stream")
+local new_hex_streamer = require("hex_stream")
+local new_bin_streamer = require("bin_stream")
 
 -- Sets the current buffer to the string s
 local set_buff = function(s)
@@ -36,7 +37,7 @@ end
 module.hd_vim_buffer = function()
     local current_buffer = vim.buffer(false)
     local processes_packets = {}
-    local streamer = new_streamer(tonumber(vim.eval("getfsize(expand(@%))")))
+    local streamer = new_hex_streamer(tonumber(vim.eval("getfsize(expand(@%))")))
     
     for i=1,#current_buffer do
         processes_packets[#processes_packets+1] = streamer:process(current_buffer[1])
@@ -66,10 +67,32 @@ end
 -- Transform the current hexdump buffer ack into binary
 -- Return true if it can be done and false otherwise.
 module.binarize_vim_buffer = function()
-    local dumped_buff = get_buff()
-    local bin_buff, ok = hex_edit.binarize_buffer(dumped_buff)
+    local current_buffer = vim.buffer(false)
+    local streamer = new_bin_streamer()
+    local ok = true
+    vim.command('call vim_hex#safekeeping("binarize")')
+
+
+    for i=1,#current_buffer do
+        local err = streamer:stream_line(current_buffer[1])
+        if err then
+            print(string.format("Error line %i:", i))
+            print(err)
+            ok = false
+        end
+        current_buffer[1] = nil
+    end
+    streamer:finish()
+
+    vim.command("let b:vim_hex_trailing = 0") -- hack needed as the lines are well handled here
     if ok then
-        set_buff(bin_buff)
+        for i=1,#streamer.lines do
+            current_buffer:insert("")
+            current_buffer[#current_buffer] = streamer.lines[i]
+        end
+        current_buffer[1] = nil
+    else
+        vim.command('call vim_hex#restore("binarize")')
     end
     return ok
 end
