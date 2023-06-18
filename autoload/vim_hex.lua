@@ -3,7 +3,7 @@ local module = {hex_edit = hex_edit}
 local new_streamer = require("hex_stream")
 
 -- Sets the current buffer to the string s
-module.set_buff = function(s)
+local set_buff = function(s)
     local current_buffer = vim.buffer(false)
     for i=0,#current_buffer do
         current_buffer[1] = nil
@@ -17,7 +17,7 @@ module.set_buff = function(s)
 end
 
 -- Get the current buffer as a string
-module.get_buff = function()
+local get_buff = function()
     local current_buffer = vim.buffer(false)
     local ret = ""
     for i=1,#current_buffer do
@@ -66,10 +66,10 @@ end
 -- Transform the current hexdump buffer ack into binary
 -- Return true if it can be done and false otherwise.
 module.binarize_vim_buffer = function()
-    local dumped_buff = module.get_buff()
+    local dumped_buff = get_buff()
     local bin_buff, ok = hex_edit.binarize_buffer(dumped_buff)
     if ok then
-        module.set_buff(bin_buff)
+        set_buff(bin_buff)
     end
     return ok
 end

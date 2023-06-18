@@ -6,7 +6,7 @@ function vim_hex#OpenHex()
     set noeol
     call vim_hex#Auto()
     let b:vim_hex_filename = expand('%')
-    call vim_hex#safekeeping()
+    call vim_hex#safekeeping("raw")
     call vim_hex#UpdateTrailing()
     let l:lua_script = g:vim_hex_dir . "/vim_open_hex.lua"
     let l:lua_exec_cmd = 'luafile ' . l:lua_script
@@ -38,18 +38,19 @@ function vim_hex#Auto()
 endfunction
 
 " Makes a copy of the text in a safekeeping variable
-function vim_hex#safekeeping()
+let b:vim_hex_buffer_copy_dic = {}
+function vim_hex#safekeeping(key)
     let l:reg_save=@a
-    normal ggVG"ay
-    let b:vim_hex_buffer_copy=@a
+    silent normal ggVG"ay
+    let b:vim_hex_buffer_copy_dic[a:key]=@a
     let @a=l:reg_save
 endfunction
 
 " Restore the buffer to the copy in the safekeeping variable
-function vim_hex#restore()
+function vim_hex#restore(key)
     let l:reg_save=@a
-    let @a=b:vim_hex_buffer_copy
-    normal ggdG"apggdd
+    let @a=b:vim_hex_buffer_copy_dic[a:key]
+    silent normal ggdG"apggdd
     let @a=l:reg_save
 endfunction
 
