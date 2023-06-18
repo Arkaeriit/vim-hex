@@ -2,7 +2,7 @@
 local function read_all(f)
     local major = tonumber(_VERSION:sub(5,5))
     local minor = tonumber(_VERSION:sub(7,7))
-    if major > 5 or minor > 2 then
+    if major < 5 or minor < 2 then
         return f:read("a")
     else
         return f:read("*a")
