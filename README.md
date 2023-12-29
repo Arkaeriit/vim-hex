@@ -20,7 +20,7 @@ Simply install this plugin like any other plugin. For example, with Pathogen, co
 
 ## Speed boost
 
-The plugin can work while only executing Lua and Vimscript. It works but it can be somewhat slow on big files. To minimize this issue, some of the most expensive functions have been written in C as well. To use them, simply use `make` to compile them. For it to work, you need to have a Lua environment compatible with the Lua interpreter embedded in Vim.
+The plugin can work while only executing Lua and Vimscript. It works but it can be somewhat slow on big files. To minimize this issue, some of the most expensive functions have been written in C as well. To use them, simply use `make` to compile them. For it to work, the desired Lua version is automatically downloaded before compilation.
 
 By doing so, you can expect a 5.5 times speed upgrade for reading files and a 2.1 times speed upgrade for writing files.
 
