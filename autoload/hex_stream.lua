@@ -79,7 +79,7 @@ local helper = {process_bin_to_hex = function(offset, offset_size, unprocessed_d
     local left_unprocessed = unprocessed_data:sub(1+number_of_lines*16)
     return ret, left_unprocessed
 end}
-local so_lib_path = package.cpath:sub(0,#package.cpath-4).."hex_stream_helper.so"
+local so_lib_path = package.cpath:sub(0,#package.cpath-4).."stream_helper.so"
 local so = io.open(so_lib_path, "r")
 if so ~= nil then
     so:close()
