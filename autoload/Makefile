@@ -19,11 +19,11 @@ clean :
 	rm -rf lua*
 	rm -rf liblua.a
 
-lua_version : lua_version.vim
+lua_version : lua_version.vim $(shell which vim)
 	vim --cmd "source $<"
 
 lua.tar.gz: lua_version
-	curl -R http://www.lua.org/ftp/lua-$(shell cat $<).tar.gz -o $@
+	curl -R -L http://www.lua.org/ftp/lua-$(shell cat $<).tar.gz -o $@
 
 liblua.a : lua.tar.gz lua_version
 	tar xzf $< && \
@@ -33,7 +33,14 @@ liblua.a : lua.tar.gz lua_version
 		cp src/liblua.a ..
 
 lua_version.vim :
-	echo ":lua f = io.open('lua_version', 'w'); f:write(vim.lua_version); f:close()" > $@
+	echo ":lua f = io.open('lua_version', 'w') \
+	           if vim.lua_version then \
+	               f:write(vim.lua_version) \
+	           else \
+	               local version = string.gsub(_VERSION..'.0', 'Lua ', '') \
+	               f:write(version) \
+	           end \
+	           f:close()" > $@
 	echo ":q" >> $@
 
 
