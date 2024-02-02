@@ -4,6 +4,7 @@ LDFLAGS += $(LUA)
 CFLAGS += -Wall -Wextra -fPIC -g -I lua/src/ -L./
 
 CC ?= gcc
+VIM ?= vim
 
 all : stream_helper.so
 
@@ -19,8 +20,8 @@ clean :
 	rm -rf lua*
 	rm -rf liblua.a
 
-lua_version : lua_version.vim $(shell which vim)
-	vim --cmd "source $<"
+lua_version : lua_version.vim $(shell which $(VIM))
+	$(VIM) --cmd "source $<"
 
 lua.tar.gz: lua_version
 	curl -R -L http://www.lua.org/ftp/lua-$(shell cat $<).tar.gz -o $@
@@ -29,7 +30,7 @@ liblua.a : lua.tar.gz lua_version
 	tar xzf $< && \
 		mv lua-$(shell cat lua_version) lua && \
 		cd lua && \
-		cat ../fix_lua_cflags.vim | vim src/Makefile && \
+		cat ../fix_lua_cflags.vim | $(VIM) src/Makefile && \
 		$(MAKE) linux src/liblua.a || $(MAKE) src/liblua.a && \
 		cp src/liblua.a ..
 
