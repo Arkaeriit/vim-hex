@@ -1,0 +1,2 @@
+:%s/MYCFLAGS=/MYCFLAGS=-fPIC/
+:wq
